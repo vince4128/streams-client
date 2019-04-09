@@ -1,4 +1,5 @@
 import streams from '../apis/streams';
+import history from '../history';
 import {
     SIGN_IN, 
     SIGN_OUT, 
@@ -28,7 +29,7 @@ export const createStream = (formValues) => {
         const response = await streams.post('/streams', {...formValues, userId});
 
         dispatch({type:CREATE_STREAM, payload:response.data});
-        
+        history.push('/');
     }
 };
 
@@ -39,15 +40,18 @@ export const fetchStreams = () => async dispatch => {
 };
 
 export const fetchStream = (id) => async dispatch => {
-    const response = streams.get(`/streams/${id}`);
+    const response = await streams.get(`/streams/${id}`);
 
-    dispatch({ type:FETCH_STREAM, payload:response.data });
+    dispatch({ type:FETCH_STREAM, payload:response.data });    
 };
 
+// using patch given the request only send 2 parameters (title, description) 
+//and we don't want to delete userId in dataBase
 export const editStream = (id, formValues) => async dispatch => {
-    const response = await streams.put(`/streams/${id}`, formValues);
+    const response = await streams.patch(`/streams/${id}`, formValues);
 
     dispatch({ type: EDIT_STREAM, payload:response.data });
+    history.push('/');
 }
 
 export const deleteStream = (id) => async dispatch => {
